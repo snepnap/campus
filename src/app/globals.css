@@ -1,0 +1,257 @@
+@import "tailwindcss";
+
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-pulse-glow: pulse-glow 4 s ease-in-out infinite;
+  --animate-spin-slow: spin 8s linear infinite;
+  --animate-reverse-spin: reverse-spin 8s linear infinite;
+  --animate-blob: blob 7s infinite;
+  --animate-shimmer: shimmer 2s linear infinite;
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  @keyframes reverse-spin {
+    from {
+      transform: rotate(360deg);
+    }
+
+    to {
+      transform: rotate(0deg);
+    }
+  }
+
+  @keyframes accordion-down {
+    from {
+      height: 0
+    }
+
+    to {
+      height: var(--radix-accordion-content-height)
+    }
+  }
+
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height)
+    }
+
+    to {
+      height: 0
+    }
+  }
+
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+
+    50% {
+      transform: translateY(-20px) rotate(2deg);
+    }
+  }
+
+  @keyframes pulse-glow {
+
+    0%,
+    100% {
+      opacity: 0.5;
+      transform: scale(1);
+      filter: blur(50px);
+    }
+
+    50% {
+      opacity: 0.8;
+      transform: scale(1.1);
+      filter: blur(70px);
+    }
+  }
+
+  @keyframes blob {
+    0% {
+      transform: translate(0px, 0px) scale(1);
+    }
+
+    33% {
+      transform: translate(30px, -50px) scale(1.1);
+    }
+
+    66% {
+      transform: translate(-20px, 20px) scale(0.9);
+    }
+
+    100% {
+      transform: translate(0px, 0px) scale(1);
+    }
+  }
+}
+
+@layer base {
+
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}
+
+:root {
+  /* Ultra-Premium Cyberpunk-ish Palette */
+  --background: 230 40% 98%;
+  --foreground: 230 60% 10%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 230 60% 10%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 230 60% 10%;
+
+  --primary: 250 84% 54%;
+  /* Deep Electric Indigo */
+  --primary-foreground: 210 40% 98%;
+
+  --secondary: 190 90% 50%;
+  /* Cyber Cyan */
+  --secondary-foreground: 230 60% 10%;
+
+  --muted: 230 20% 94%;
+  --muted-foreground: 230 10% 40%;
+
+  --accent: 250 84% 54%;
+  --accent-foreground: 210 40% 98%;
+
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 210 40% 98%;
+
+  --border: 230 20% 90%;
+  --input: 230 20% 90%;
+  --ring: 250 84% 54%;
+
+  --radius: 1.5rem;
+}
+
+.dark {
+  --background: 230 50% 4%;
+  --foreground: 210 40% 98%;
+
+  --card: 230 50% 6%;
+  --card-foreground: 210 40% 98%;
+
+  --popover: 230 50% 5%;
+  --popover-foreground: 210 40% 98%;
+
+  --primary: 250 84% 64%;
+  --primary-foreground: 230 50% 4%;
+
+  --secondary: 190 90% 60%;
+  --secondary-foreground: 230 50% 4%;
+
+  --muted: 230 30% 12%;
+  --muted-foreground: 230 10% 70%;
+
+  --accent: 250 84% 64%;
+  --accent-foreground: 210 40% 98%;
+
+  --destructive: 0 62% 40%;
+  --destructive-foreground: 210 40% 98%;
+
+  --border: 230 30% 15%;
+  --input: 230 30% 15%;
+  --ring: 250 84% 64%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground transition-colors duration-500 overflow-x-hidden;
+    background-image: radial-gradient(circle at top right, hsla(var(--primary), 0.05), transparent 40%),
+      radial-gradient(circle at bottom left, hsla(var(--secondary), 0.05), transparent 40%);
+  }
+}
+
+/* 3D Premium Elements */
+.glass-panel {
+  @apply bg-white/70 dark:bg-black/40 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-2xl;
+}
+
+.neo-shadow {
+  box-shadow: 8px 8px 0px 0px hsla(var(--primary), 0.2);
+}
+
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-br from-primary via-primary to-secondary;
+}
+
+.card-3d {
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform-style: preserve-3d;
+}
+
+.card-3d:hover {
+  transform: translateY(-10px) rotateX(2deg) rotateY(2deg);
+}
+
+/* Mesh Gradient Backgrounds */
+.bg-mesh {
+  background-color: hsla(230, 40%, 98%, 1);
+  background-image:
+    radial-gradient(at 0% 0%, hsla(250, 84%, 54%, 0.1) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, hsla(190, 90%, 50%, 0.1) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, hsla(320, 80%, 60%, 0.1) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, hsla(250, 84%, 54%, 0.1) 0px, transparent 50%);
+}
+
+.dark .bg-mesh {
+  background-color: hsla(230, 50%, 4%, 1);
+}

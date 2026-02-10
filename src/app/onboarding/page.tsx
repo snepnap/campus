@@ -1,0 +1,265 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
+import { GraduationCap, Book, Award, BookOpen, CheckCircle, ArrowRight, ArrowLeft, Star, Heart, Activity, Globe, Sparkles } from 'lucide-react';
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+// import { departments } from "@/data/syllabus-data"; // REMOVED
+import { PageWrapper, FadeIn, ScaleOnHover } from "@/components/page-motion";
+
+export default function OnboardingPage() {
+    const router = useRouter();
+    const [step, setStep] = useState(1);
+    const [departments, setDepartments] = useState<string[]>([]);
+    const [loadingDepartments, setLoadingDepartments] = useState(true);
+
+    const [formData, setFormData] = useState({
+        semester: "",
+        year: "",
+        department: "Computer Science & IT",
+        cgpa: "",
+        minor: "",
+        mdc: "",
+        sec: "",
+        vac: ""
+    });
+
+    useEffect(() => {
+        const fetchDepartments = async () => {
+            try {
+                const res = await fetch('/api/syllabus?mode=departments');
+                const data = await res.json();
+                if (data.success) {
+                    setDepartments(data.data);
+                }
+            } catch (error) {
+                console.error("Failed to fetch departments", error);
+            } finally {
+                setLoadingDepartments(false);
+            }
+        };
+
+        fetchDepartments();
+    }, []);
+
+    const handleInputChange = (field: string, value: string) => {
+        setFormData(prev => ({ ...prev, [field]: value }));
+    };
+
+    const nextStep = () => setStep(step + 1);
+    const prevStep = () => setStep(step - 1);
+
+    const handleSubmit = () => {
+        router.push('/dashboard');
+    };
+
+    const stepProgress = (step / 2) * 100;
+
+    return (
+        <div className="min-h-screen bg-mesh flex items-center justify-center p-4 md:p-8 font-[family-name:var(--font-geist-sans)] selection:bg-primary/20">
+            {/* Ambient Background */}
+            <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[100px] animate-blob" />
+                <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/10 rounded-full blur-[100px] animate-blob animation-delay-2000" />
+            </div>
+
+            <main className="w-full max-w-4xl relative z-10">
+                <div className="glass-panel p-8 md:p-12 rounded-[3.5rem] relative overflow-hidden">
+                    {/* Header/Progress */}
+                    <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
+                        <div className="flex items-center gap-4">
+                            <div className="p-4 bg-primary rounded-[1.5rem] shadow-xl shadow-primary/30">
+                                <Activity className="w-8 h-8 text-white animate-pulse" />
+                            </div>
+                            <div>
+                                <h1 className="text-3xl font-black tracking-tight uppercase">Setup your profile</h1>
+                                <p className="text-muted-foreground text-sm font-bold tracking-widest uppercase">Let's get you ready</p>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col items-end gap-2 w-full md:w-auto">
+                            <div className="flex gap-1">
+                                {[1, 2].map((i) => (
+                                    <div key={i} className={`h-2 rounded-full transition-all duration-500 ${step >= i ? 'w-12 bg-primary' : 'w-4 bg-muted'}`} />
+                                ))}
+                            </div>
+                            <span className="text-xs font-black text-primary uppercase">Step {step} of 2</span>
+                        </div>
+                    </div>
+
+                    <AnimatePresence mode="wait">
+                        {step === 1 ? (
+                            <motion.div
+                                key="step1"
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 1.05 }}
+                                className="space-y-8"
+                            >
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="space-y-3">
+                                        <Label className="text-sm font-black uppercase tracking-wider text-muted-foreground ml-1 flex items-center gap-2">
+                                            <Globe className="w-4 h-4 text-primary" /> Core Department
+                                        </Label>
+                                        <Select onValueChange={(val) => handleInputChange("department", val)} value={formData.department} disabled={loadingDepartments}>
+                                            <SelectTrigger className="h-14 rounded-2xl bg-muted/30 border-0 focus:ring-2 focus:ring-primary font-bold">
+                                                <SelectValue placeholder={loadingDepartments ? "Loading..." : "Select Fleet"} />
+                                            </SelectTrigger>
+                                            <SelectContent className="rounded-2xl">
+                                                {departments.map(dept => (
+                                                    <SelectItem key={dept} value={dept} className="rounded-xl font-bold py-3">{dept}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-3">
+                                        <Label className="text-sm font-black uppercase tracking-wider text-muted-foreground ml-1 flex items-center gap-2">
+                                            <Star className="w-4 h-4 text-amber-500" /> Current Standing (CGPA)
+                                        </Label>
+                                        <Input
+                                            type="number"
+                                            placeholder="8.50"
+                                            className="h-14 rounded-2xl bg-muted/30 border-0 focus-visible:ring-2 focus-visible:ring-primary font-bold text-lg"
+                                            value={formData.cgpa}
+                                            onChange={(e) => handleInputChange("cgpa", e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="space-y-3">
+                                        <Label className="text-sm font-black uppercase tracking-wider text-muted-foreground ml-1">Select Semester</Label>
+                                        <div className="grid grid-cols-4 gap-2">
+                                            {[1, 2, 3, 4, 5, 6, 7, 8].map(s => (
+                                                <button
+                                                    key={s}
+                                                    onClick={() => handleInputChange("semester", s.toString())}
+                                                    className={`h-12 rounded-xl font-black text-sm transition-all ${formData.semester === s.toString() ? 'bg-primary text-white shadow-lg shadow-primary/30 scale-105' : 'bg-muted/40 text-muted-foreground hover:bg-muted/60'}`}
+                                                >
+                                                    S{s}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="space-y-3">
+                                        <Label className="text-sm font-black uppercase tracking-wider text-muted-foreground ml-1">Select Year</Label>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            {[1, 2, 3, 4].map(y => (
+                                                <button
+                                                    key={y}
+                                                    onClick={() => handleInputChange("year", y.toString())}
+                                                    className={`h-12 rounded-xl font-black text-xs transition-all ${formData.year === y.toString() ? 'bg-secondary text-secondary-foreground shadow-lg shadow-secondary/30 scale-105' : 'bg-muted/40 text-muted-foreground hover:bg-muted/60'}`}
+                                                >
+                                                    YEAR {y}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        ) : (
+                            <motion.div
+                                key="step2"
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 1.05 }}
+                                className="space-y-8"
+                            >
+                                <div className="bg-primary/5 p-6 rounded-[2rem] border border-primary/20">
+                                    <h3 className="font-black text-lg flex items-center gap-2"><Sparkles className="w-5 h-5 text-primary" /> NEP Subjects</h3>
+                                    <p className="text-muted-foreground text-sm font-medium mt-1 uppercase tracking-tight">Select your optional subjects for the current semester.</p>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="space-y-3">
+                                        <Label className="text-sm font-black uppercase tracking-wider text-muted-foreground ml-1">Minor Specialization</Label>
+                                        <Select onValueChange={(val) => handleInputChange("minor", val)} value={formData.minor}>
+                                            <SelectTrigger className="h-14 rounded-2xl bg-muted/30 border-0 font-bold">
+                                                <SelectValue placeholder="Select Minor" />
+                                            </SelectTrigger>
+                                            <SelectContent className="rounded-2xl">
+                                                <SelectItem value="mgt" className="font-bold py-3">Business Management</SelectItem>
+                                                <SelectItem value="eco" className="font-bold py-3">Economics</SelectItem>
+                                                <SelectItem value="psy" className="font-bold py-3">Psychology</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        <Label className="text-sm font-black uppercase tracking-wider text-muted-foreground ml-1">Multi-Disciplinary</Label>
+                                        <Select onValueChange={(val) => handleInputChange("mdc", val)} value={formData.mdc}>
+                                            <SelectTrigger className="h-14 rounded-2xl bg-muted/30 border-0 font-bold">
+                                                <SelectValue placeholder="Select MDC" />
+                                            </SelectTrigger>
+                                            <SelectContent className="rounded-2xl">
+                                                <SelectItem value="env" className="font-bold py-3">Environmental Science</SelectItem>
+                                                <SelectItem value="yoga" className="font-bold py-3">Yoga & Medicine</SelectItem>
+                                                <SelectItem value="art" className="font-bold py-3">Fine Arts</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="space-y-3">
+                                        <Label className="text-sm font-black uppercase tracking-wider text-muted-foreground ml-1">Skill Enhancement (SEC)</Label>
+                                        <Select onValueChange={(val) => handleInputChange("sec", val)} value={formData.sec}>
+                                            <SelectTrigger className="h-14 rounded-2xl bg-muted/30 border-0 font-bold">
+                                                <SelectValue placeholder="Select SEC" />
+                                            </SelectTrigger>
+                                            <SelectContent className="rounded-2xl">
+                                                <SelectItem value="python" className="font-bold py-3">Python Programming</SelectItem>
+                                                <SelectItem value="web" className="font-bold py-3">Web Development</SelectItem>
+                                                <SelectItem value="soft" className="font-bold py-3">Communication Skills</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        <Label className="text-sm font-black uppercase tracking-wider text-muted-foreground ml-1">Value Addition (VAC)</Label>
+                                        <Select onValueChange={(val) => handleInputChange("vac", val)} value={formData.vac}>
+                                            <SelectTrigger className="h-14 rounded-2xl bg-muted/30 border-0 font-bold">
+                                                <SelectValue placeholder="Select VAC" />
+                                            </SelectTrigger>
+                                            <SelectContent className="rounded-2xl">
+                                                <SelectItem value="ethics" className="font-bold py-3">Digital Ethics</SelectItem>
+                                                <SelectItem value="sports" className="font-bold py-3">Sports & Fitness</SelectItem>
+                                                <SelectItem value="nss" className="font-bold py-3">Social Service</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                    {/* Footer Actions */}
+                    <div className="mt-16 pt-8 border-t border-border/50 flex items-center justify-between gap-6">
+                        {step === 2 ? (
+                            <Button variant="outline" onClick={prevStep} className="h-14 px-8 rounded-2xl border-2 font-black transition-all hover:bg-muted/50">
+                                <ArrowLeft className="mr-2 h-5 w-5" /> Back
+                            </Button>
+                        ) : (
+                            <div />
+                        )}
+
+                        {step === 1 ? (
+                            <Button onClick={nextStep} className="h-14 px-10 rounded-2xl bg-primary text-white font-black shadow-xl shadow-primary/30 hover:scale-[1.05] active:scale-95 transition-all text-lg tracking-tight">
+                                Next Step <ArrowRight className="ml-2 h-5 w-5" />
+                            </Button>
+                        ) : (
+                            <Button onClick={handleSubmit} className="h-14 px-10 rounded-2xl bg-secondary text-secondary-foreground font-black shadow-xl shadow-secondary/30 hover:scale-[1.05] active:scale-95 transition-all text-lg tracking-tight">
+                                Setup Profile <CheckCircle className="ml-2 h-5 w-5" />
+                            </Button>
+                        )}
+                    </div>
+                </div>
+            </main>
+        </div>
+    );
+}
