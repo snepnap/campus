@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">GGU Connect Universal</string>
-    <string name="title_activity_main">GGU Connect Universal</string>
+    <string name="app_name">GGU Connect</string>
+    <string name="title_activity_main">GGU Connect</string>
     <string name="package_name">com.ggu.connect</string>
     <string name="custom_url_scheme">com.ggu.connect</string>
 </resources>
