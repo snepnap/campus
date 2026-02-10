@@ -19,7 +19,14 @@ jobs:
       - name: Install Dependencies
         run: npm install && npm install @capacitor/core @capacitor/cli @capacitor/android
 
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
       - name: Initialize Capacitor Android
+
         run: npx cap add android
         
       - name: Build Next.js (Static)
