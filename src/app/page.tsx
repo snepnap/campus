@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BookOpen, GraduationCap, ArrowRight, User, Lock, Hash, Sparkles, Globe, ShieldCheck, Zap } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,12 @@ import { PageWrapper, FadeIn, ScaleOnHover } from "@/components/page-motion";
 export default function LoginPage() {
   const [isRegistering, setIsRegistering] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    enrollmentNo: "",
+    password: ""
+  });
+  const router = useRouter(); // Use App Router hook
 
   useEffect(() => setMounted(true), []);
 
@@ -124,7 +131,12 @@ export default function LoginPage() {
                       <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Full Name</Label>
                       <div className="relative">
                         <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                        <Input placeholder="Anand Kumar" className="h-14 pl-12 rounded-2xl bg-muted/30 border-0 focus-visible:ring-2 focus-visible:ring-primary font-medium" />
+                        <Input
+                          placeholder="Your Name (e.g. Rahul)"
+                          className="h-14 pl-12 rounded-2xl bg-muted/30 border-0 focus-visible:ring-2 focus-visible:ring-primary font-medium"
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        />
                       </div>
                     </div>
                   )}
@@ -133,7 +145,12 @@ export default function LoginPage() {
                     <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Enrollment No.</Label>
                     <div className="relative">
                       <Hash className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                      <Input placeholder="GGV/24/0001" className="h-14 pl-12 rounded-2xl bg-muted/30 border-0 focus-visible:ring-2 focus-visible:ring-primary font-medium uppercase" />
+                      <Input
+                        placeholder="GGV/24/0001"
+                        className="h-14 pl-12 rounded-2xl bg-muted/30 border-0 focus-visible:ring-2 focus-visible:ring-primary font-medium uppercase"
+                        value={formData.enrollmentNo}
+                        onChange={(e) => setFormData({ ...formData, enrollmentNo: e.target.value })}
+                      />
                     </div>
                   </div>
 
@@ -150,13 +167,18 @@ export default function LoginPage() {
                     </div>
                   </div>
 
-                  <Link href="/onboarding" className="block w-full pt-4">
+                  <div onClick={() => {
+                    // Simple navigation with query params for demo
+                    // In a real app, this would be a proper form submission
+                    const query = isRegistering ? `?name=${encodeURIComponent(formData.name)}&enrollmentNo=${encodeURIComponent(formData.enrollmentNo)}` : '';
+                    router.push(isRegistering ? `/onboarding${query}` : '/dashboard');
+                  }} className="block w-full pt-4 cursor-pointer">
                     <Button className="w-full h-14 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold shadow-xl shadow-primary/30 transition-all hover:scale-[1.02] active:scale-95 text-lg">{
                       isRegistering ? 'Sign Up' : 'Login'
                     }
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
-                  </Link>
+                  </div>
                 </motion.form>
               </AnimatePresence>
 

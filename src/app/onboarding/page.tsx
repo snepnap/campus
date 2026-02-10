@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GraduationCap, Book, Award, BookOpen, CheckCircle, ArrowRight, ArrowLeft, Star, Heart, Activity, Globe, Sparkles, User, Image as ImageIcon } from 'lucide-react';
+import { Suspense } from 'react';
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +14,14 @@ import { ggvNepCourses, ggvDepartments } from "@/data/ggv-data";
 import { PageWrapper, FadeIn, ScaleOnHover } from "@/components/page-motion";
 
 export default function OnboardingPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <OnboardingContent />
+        </Suspense>
+    );
+}
+
+function OnboardingContent() {
     const router = useRouter();
     const [step, setStep] = useState(1);
     const [departments] = useState<string[]>(ggvDepartments.map(d => d.name));
@@ -27,8 +36,24 @@ export default function OnboardingPage() {
         mdc: "",
         sec: "",
         vac: "",
-        avatar: ""
+        avatar: "",
+        name: "", // Will be filled from search params
+        enrollmentNo: "" // Will be filled from search params
     });
+
+    const searchParams = useSearchParams();
+
+    useEffect(() => {
+        const name = searchParams.get('name');
+        const enrollmentNo = searchParams.get('enrollmentNo');
+        if (name || enrollmentNo) {
+            setFormData(prev => ({
+                ...prev,
+                name: name || prev.name,
+                enrollmentNo: enrollmentNo || prev.enrollmentNo
+            }));
+        }
+    }, [searchParams]);
 
     const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -284,7 +309,7 @@ export default function OnboardingPage() {
                         )}
                     </div>
                 </div>
-            </main >
-        </div >
+            </main>
+        </div>
     );
 }
