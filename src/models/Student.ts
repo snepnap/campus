@@ -10,10 +10,14 @@ const StudentSchema = new mongoose.Schema({
         required: [true, 'Please provide an enrollment number'],
         unique: true,
     },
+    password: {
+        type: String,
+        required: [true, 'Please provide a password'],
+    },
     email: {
         type: String,
-        required: [true, 'Please provide an email'],
         unique: true,
+        sparse: true, // Allow multiple nulls/missing if not provided
     },
     course: String,
     semester: String,

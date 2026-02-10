@@ -19,14 +19,53 @@ export default function LoginPage() {
     enrollmentNo: "",
     password: ""
   });
-  const router = useRouter(); // Use App Router hook
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
 
   useEffect(() => setMounted(true), []);
+
+  const handleSubmit = async () => {
+    setError("");
+
+    if (!formData.enrollmentNo || !formData.password) {
+      setError("Please fill in all fields.");
+      return;
+    }
+
+    if (isRegistering && !formData.name) {
+      setError("Name is required for registration.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const endpoint = isRegistering ? '/api/auth/register' : '/api/auth/login';
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        router.push(isRegistering ? `/onboarding?name=${encodeURIComponent(formData.name)}&enrollmentNo=${encodeURIComponent(formData.enrollmentNo)}` : '/dashboard');
+      } else {
+        setError(data.message || "Authentication failed");
+      }
+    } catch (err) {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen bg-mesh flex items-center justify-center p-4 md:p-8 font-[family-name:var(--font-geist-sans)] selection:bg-primary/30">
+    <div className="min-h-screen bg-mesh flex items-center justify-center p-2 md:p-8 font-[family-name:var(--font-geist-sans)] selection:bg-primary/30 overflow-x-hidden">
       {/* Dynamic Background Elements */}
       {/* Optimized Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
