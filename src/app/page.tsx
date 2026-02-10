@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ModeToggle } from "@/components/mode-toggle";
 import { PageWrapper, FadeIn, ScaleOnHover } from "@/components/page-motion";
+import { signIn } from "next-auth/react";
 
 export default function LoginPage() {
   const [isRegistering, setIsRegistering] = useState(false);
@@ -41,19 +42,33 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const endpoint = isRegistering ? '/api/auth/register' : '/api/auth/login';
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+      if (isRegistering) {
+        // Register first
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        });
+
+        const data = await res.json();
+        if (!data.success) {
+          setError(data.message || "Registration failed");
+          setLoading(false);
+          return;
+        }
+      }
+
+      // SignIn with Credentials
+      const result = await signIn("credentials", {
+        enrollmentNo: formData.enrollmentNo,
+        password: formData.password,
+        redirect: false,
       });
 
-      const data = await res.json();
-
-      if (data.success) {
-        router.push(isRegistering ? `/onboarding?name=${encodeURIComponent(formData.name)}&enrollmentNo=${encodeURIComponent(formData.enrollmentNo)}` : '/dashboard');
+      if (result?.error) {
+        setError("Invalid credentials. Please check your enrollment number and password.");
       } else {
-        setError(data.message || "Authentication failed");
+        router.push(isRegistering ? `/onboarding?name=${encodeURIComponent(formData.name)}&enrollmentNo=${encodeURIComponent(formData.enrollmentNo)}` : '/dashboard');
       }
     } catch (err) {
       setError("Something went wrong. Please try again.");
@@ -202,20 +217,43 @@ export default function LoginPage() {
                     </div>
                     <div className="relative">
                       <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                      <Input type="password" placeholder="••••••••" className="h-14 pl-12 rounded-2xl bg-muted/30 border-0 focus-visible:ring-2 focus-visible:ring-primary font-medium" />
+                      <Input
+                        type="password"
+                        placeholder="••••••••"
+                        className="h-14 pl-12 rounded-2xl bg-muted/30 border-0 focus-visible:ring-2 focus-visible:ring-primary font-medium"
+                        value={formData.password}
+                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                      />
                     </div>
                   </div>
 
-                  <div onClick={() => {
-                    // Simple navigation with query params for demo
-                    // In a real app, this would be a proper form submission
-                    const query = isRegistering ? `?name=${encodeURIComponent(formData.name)}&enrollmentNo=${encodeURIComponent(formData.enrollmentNo)}` : '';
-                    router.push(isRegistering ? `/onboarding${query}` : '/dashboard');
-                  }} className="block w-full pt-4 cursor-pointer">
-                    <Button className="w-full h-14 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold shadow-xl shadow-primary/30 transition-all hover:scale-[1.02] active:scale-95 text-lg">{
-                      isRegistering ? 'Sign Up' : 'Login'
-                    }
-                      <ArrowRight className="ml-2 h-5 w-5" />
+                  {error && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-destructive text-sm font-bold text-center bg-destructive/10 py-2 rounded-xl"
+                    >
+                      {error}
+                    </motion.p>
+                  )}
+
+                  <div className="block w-full pt-4">
+                    <Button
+                      onClick={handleSubmit}
+                      disabled={loading}
+                      className="w-full h-14 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold shadow-xl shadow-primary/30 transition-all hover:scale-[1.02] active:scale-95 text-lg"
+                    >
+                      {loading ? (
+                        <div className="flex items-center gap-2">
+                          <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          <span>{isRegistering ? 'Creating Account...' : 'Logging in...'}</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center">
+                          {isRegistering ? 'Sign Up' : 'Login'}
+                          <ArrowRight className="ml-2 h-5 w-5" />
+                        </div>
+                      )}
                     </Button>
                   </div>
                 </motion.form>

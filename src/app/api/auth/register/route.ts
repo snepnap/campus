@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/dbConnect';
 import Student from '@/models/Student';
+import bcrypt from 'bcryptjs';
 
 export async function POST(request: Request) {
     try {
@@ -16,10 +17,12 @@ export async function POST(request: Request) {
             return NextResponse.json({ success: false, message: "User already exists" }, { status: 400 });
         }
 
+        const hashedPassword = await bcrypt.hash(password, 10);
+
         const newUser = await Student.create({
             name,
             enrollmentNo,
-            password,
+            password: hashedPassword,
             email: `${enrollmentNo.replace(/\//g, '')}@ggu.in` // Simple email generation
         });
 

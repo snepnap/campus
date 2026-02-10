@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
+import { signOut } from "next-auth/react";
 
 import { cn } from "@/lib/utils";
 import {
@@ -147,8 +148,7 @@ function SidebarContent() {
 
                 <button
                     onClick={() => {
-                        // Clear any local storage/cookies if necessary
-                        window.location.href = "/";
+                        signOut({ callbackUrl: "/" });
                     }}
                     className="flex items-center justify-center gap-3 w-full py-4 px-6 text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-2xl transition-all group overflow-hidden relative border border-white/5"
                 >
