@@ -3,7 +3,7 @@
     "appName": "GGU Connect",
     "webDir": "public",
     "server": {
-        "url": "https://college-connect-xi.vercel.app",
+        "url": "https://campus-steel.vercel.app",
         "allowNavigation": [
             "*"
         ]
