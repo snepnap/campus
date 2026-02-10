@@ -3,6 +3,8 @@ import dbConnect from '@/lib/dbConnect';
 import Student from '@/models/Student';
 import bcrypt from 'bcryptjs';
 
+export const runtime = 'nodejs';
+
 export async function POST(request: Request) {
     try {
         await dbConnect();
