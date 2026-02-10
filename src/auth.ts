@@ -5,8 +5,16 @@ import dbConnect from "@/lib/dbConnect";
 import Student from "@/models/Student";
 import { authConfig } from "./auth.config";
 
+const AUTH_SECRET = process.env.AUTH_SECRET;
+
+if (!AUTH_SECRET && process.env.NODE_ENV === "production") {
+    console.warn("[AUTH] WARNING: AUTH_SECRET is not defined. This will cause 'Server Configuration' errors on production.");
+}
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
     ...authConfig,
+    secret: AUTH_SECRET,
+    trustHost: true,
     providers: [
         Credentials({
             name: "Credentials",
@@ -17,7 +25,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             async authorize(credentials) {
                 if (!credentials?.enrollmentNo || !credentials?.password) return null;
 
-                await dbConnect();
+                try {
+                    await dbConnect();
+                } catch (dbError) {
+                    console.error("Auth DB Connection Error:", dbError);
+                    return null;
+                }
 
                 const user = await Student.findOne({ enrollmentNo: credentials.enrollmentNo as string });
 
