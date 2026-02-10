@@ -1,13 +1,9 @@
 {
     "appId": "com.ggu.connect",
-    "appName": "GGU Connect Live",
+    "appName": "GGU Connect Final",
     "webDir": "public",
-    "bundledWebRuntime": false,
     "server": {
         "url": "https://college-connect-xi.vercel.app",
-        "cleartext": true,
-        "allowNavigation": [
-            "college-connect-xi.vercel.app"
-        ]
+        "androidScheme": "https"
     }
 }
