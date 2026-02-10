@@ -27,18 +27,39 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+
 export default function ProfilePage() {
-    const [userDetails] = useState({
-        name: "ANAND KUMAR",
-        enrollmentNo: "GGV/22/0315",
-        email: "ANAND.K@GGU.AC.IN",
-        course: "B.TECH COMPUTER SCIENCE",
-        semester: "4TH SEMESTER",
-        phone: "+91 9876543210",
-        dob: "05 SEPT 2003",
-        address: "BOYS HOSTEL A, GGU CAMPUS, BILASPUR",
-        cgpa: "8.5"
-    });
+    const [userDetails, setUserDetails] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+    const router = useRouter();
+
+    useEffect(() => {
+        fetch('/api/me')
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    setUserDetails(data.data);
+                } else {
+                    // Redirect to login if fetching fails
+                    // router.push('/'); 
+                }
+                setLoading(false);
+            })
+            .catch(err => {
+                console.error("Failed to fetch user", err);
+                setLoading(false);
+            });
+    }, []);
+
+    if (loading) {
+        return <div className="flex items-center justify-center min-h-screen">Loading Profile...</div>;
+    }
+
+    if (!userDetails) {
+        return <div className="flex items-center justify-center min-h-screen">User not found</div>;
+    }
 
     return (
         <main className="p-4 md:p-8 overflow-x-hidden relative">

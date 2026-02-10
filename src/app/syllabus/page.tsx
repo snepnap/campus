@@ -36,6 +36,7 @@ import {
 
 export default function SyllabusPage() {
     const [selectedSemester, setSelectedSemester] = useState("all");
+    const [selectedDepartment, setSelectedDepartment] = useState("all");
 
     const subjects = [
         {
@@ -146,10 +147,22 @@ export default function SyllabusPage() {
                                 <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.4em]">View and track your course syllabus</p>
                             </div>
                         </div>
-                        <div className="flex gap-4">
+                        <div className="flex flex-wrap gap-4">
+                            <Select onValueChange={setSelectedDepartment} defaultValue="all">
+                                <SelectTrigger className="w-[180px] h-14 rounded-2xl bg-muted/40 border-0 font-black uppercase text-xs tracking-widest gap-2">
+                                    <SelectValue placeholder="Department" />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-2xl">
+                                    <SelectItem value="all" className="font-black py-3">ALL DEPARTMENTS</SelectItem>
+                                    <SelectItem value="cse" className="font-black py-3">CSE</SelectItem>
+                                    <SelectItem value="ece" className="font-black py-3">ECE</SelectItem>
+                                    <SelectItem value="me" className="font-black py-3">ME</SelectItem>
+                                    <SelectItem value="ce" className="font-black py-3">CE</SelectItem>
+                                </SelectContent>
+                            </Select>
                             <Select onValueChange={setSelectedSemester} defaultValue="all">
                                 <SelectTrigger className="w-[180px] h-14 rounded-2xl bg-muted/40 border-0 font-black uppercase text-xs tracking-widest gap-2">
-                                    <SelectValue placeholder="Filter" />
+                                    <SelectValue placeholder="Semester" />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-2xl">
                                     <SelectItem value="all" className="font-black py-3">ALL SEMESTERS</SelectItem>

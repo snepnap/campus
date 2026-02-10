@@ -130,6 +130,28 @@ export default function NotesPage() {
                                             <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Subject</Label>
                                             <Input placeholder="e.g. Computer Science" className="h-12 rounded-xl bg-muted/50 border-0" />
                                         </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Type</Label>
+                                                <Select defaultValue="notes">
+                                                    <SelectTrigger className="h-12 rounded-xl bg-muted/50 border-0">
+                                                        <SelectValue />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="notes">Notes</SelectItem>
+                                                        <SelectItem value="pyq">PYQ</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Dept</Label>
+                                                <Input placeholder="e.g. CSE" className="h-12 rounded-xl bg-muted/50 border-0" />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">File</Label>
+                                            <Input type="file" className="h-12 rounded-xl bg-muted/50 border-0 pt-2" />
+                                        </div>
                                     </div>
                                     <DialogFooter>
                                         <Button type="submit" className="w-full h-12 rounded-xl font-black">Upload Now</Button>
