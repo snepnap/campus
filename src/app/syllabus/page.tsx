@@ -127,11 +127,8 @@ export default function SyllabusPage() {
 
     return (
         <main className="p-4 md:p-8 overflow-x-hidden relative">
-            {/* Background Decor */}
-            <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-                <div className="absolute top-[30%] right-[-10%] w-[600px] h-[600px] bg-primary/5 rounded-full blur-[150px] animate-blob" />
-                <div className="absolute top-[60%] left-[-10%] w-[400px] h-[400px] bg-secondary/5 rounded-full blur-[100px] animate-blob animation-delay-2000" />
-            </div>
+            {/* Clean Background */}
+            <div className="fixed inset-0 pointer-events-none z-[-1] bg-mesh" />
 
             <PageWrapper>
                 <div className="relative z-10 flex flex-col gap-10">
@@ -139,12 +136,12 @@ export default function SyllabusPage() {
                     <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 glass-panel p-10 rounded-[3rem]">
                         <div className="flex items-center gap-6 w-full md:w-auto">
                             <MobileNav />
-                            <div className="p-4 bg-primary rounded-3xl shadow-2xl shadow-primary/40 rotate-3">
-                                <Target className="w-10 h-10 text-white" />
+                            <div className="p-4 bg-primary/10 rounded-2xl">
+                                <Target className="w-8 h-8 text-primary" />
                             </div>
                             <div>
-                                <h1 className="text-4xl font-black tracking-tighter uppercase leading-none mb-2">Course <span className="text-gradient">Syllabus</span></h1>
-                                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.4em]">View and track your course syllabus</p>
+                                <h1 className="text-3xl font-bold tracking-tight mb-1">Course Syllabus</h1>
+                                <p className="text-muted-foreground text-sm font-medium">View and track your course syllabus</p>
                             </div>
                         </div>
                         <div className="flex flex-wrap gap-4">
@@ -196,76 +193,64 @@ export default function SyllabusPage() {
                     <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {subjects.filter(s => selectedSemester === "all" || s.semester === selectedSemester).map((subject, index) => (
                             <StaggerItem key={index}>
-                                <ScaleOnHover className="h-full">
+                                <div className="relative group h-full bg-card border border-border/50 rounded-[2rem] p-6 flex flex-col transition-all hover:shadow-lg hover:-translate-y-1">
+                                    {/* Status Badge */}
+                                    <div className="absolute top-6 right-6">
+                                        <Badge variant="secondary" className="font-semibold">
+                                            {subject.credits} Credits
+                                        </Badge>
+                                    </div>
+
+                                    {/* Icon */}
                                     <div className={cn(
-                                        "relative group h-full glass-panel rounded-[2.5rem] p-8 flex flex-col transition-all duration-500 hover:scale-[1.02]",
-                                        "hover:border-primary/50"
+                                        "w-14 h-14 rounded-2xl flex items-center justify-center mb-6",
+                                        "bg-primary/10 text-primary"
                                     )}>
-                                        {/* Status Badge */}
-                                        <div className="absolute top-8 right-8">
-                                            <Badge className="bg-white/10 text-foreground border-white/20 backdrop-blur-md font-black italic">
-                                                {subject.credits} Credits
-                                            </Badge>
-                                        </div>
+                                        <subject.icon className="w-7 h-7" />
+                                    </div>
 
-                                        {/* Icon Globe */}
-                                        <div className={cn(
-                                            "w-16 h-16 rounded-[1.5rem] bg-gradient-to-br flex items-center justify-center text-white shadow-lg group-hover:rotate-6 transition-transform",
-                                            subject.color, subject.shadow
-                                        )}>
-                                            <subject.icon className="w-8 h-8" />
-                                        </div>
+                                    <div className="mb-6">
+                                        <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">{subject.code}</p>
+                                        <h3 className="text-xl font-bold leading-tight">
+                                            {subject.title}
+                                        </h3>
+                                    </div>
 
-                                        <div className="mt-8 mb-4">
-                                            <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-2">{subject.code}</p>
-                                            <h3 className="text-2xl font-black uppercase tracking-tighter leading-tight group-hover:text-primary transition-colors">
-                                                {subject.title}
-                                            </h3>
-                                        </div>
-
-                                        {/* Progress Orb/Bar */}
-                                        <div className="mt-auto space-y-4">
-                                            <div className="flex justify-between items-end">
-                                                <div>
-                                                    <span className="text-[10px] font-black text-muted-foreground uppercase block mb-1">Status</span>
-                                                    <span className="font-bold text-sm tracking-tight">{subject.completedUnits} OF {subject.units} UNITS COMPLETED</span>
-                                                </div>
-                                                <span className="text-2xl font-black text-primary tracking-tighter">{subject.progress}%</span>
+                                    {/* Progress Orb/Bar */}
+                                    <div className="mt-auto space-y-4">
+                                        <div className="flex justify-between items-end">
+                                            <div>
+                                                <span className="text-xs font-semibold text-muted-foreground block mb-1">Status</span>
+                                                <span className="font-bold text-sm">{subject.completedUnits} of {subject.units} Units</span>
                                             </div>
-                                            <div className="h-3 w-full bg-muted rounded-full overflow-hidden p-[2px]">
-                                                <motion.div
-                                                    initial={{ width: 0 }}
-                                                    animate={{ width: `${subject.progress}%` }}
-                                                    transition={{ duration: 1.5, ease: "circOut" }}
-                                                    className={cn("h-full rounded-full bg-gradient-to-r shadow-[0_0_10px_rgba(var(--primary),0.5)]", subject.color)}
-                                                />
-                                            </div>
+                                            <span className="text-xl font-bold text-primary">{subject.progress}%</span>
+                                        </div>
+                                        <Progress value={subject.progress} className="h-2" />
 
-                                            <div className="grid grid-cols-2 gap-3 mt-6">
-                                                <Link href="/notes" className="w-full">
-                                                    <Button className="w-full h-11 rounded-xl bg-muted/40 hover:bg-white text-muted-foreground hover:text-black border-0 font-black tracking-widest text-[9px] uppercase transition-all">
-                                                        <Activity className="w-3 h-3 mr-2" /> Resources
-                                                    </Button>
-                                                </Link>
-                                                <Button
-                                                    onClick={() => alert(`Starting intense study mode for ${subject.title}... Focus enabled!`)}
-                                                    className="w-full h-11 rounded-xl bg-primary text-white hover:scale-105 border-0 font-black tracking-widest text-[9px] uppercase shadow-lg shadow-primary/20 transition-all"
-                                                >
-                                                    <PlayCircle className="w-3 h-3 mr-2" /> Learn Now
+                                        <div className="grid grid-cols-2 gap-3 mt-4">
+                                            <Link href="/notes" className="w-full">
+                                                <Button variant="outline" className="w-full h-10 rounded-xl text-xs font-bold uppercase tracking-wider">
+                                                    Resources
                                                 </Button>
-                                            </div>
-
-                                            <Button size="sm" variant="ghost" className="w-full h-10 rounded-xl text-muted-foreground/40 hover:text-primary transition-all text-[9px] font-black uppercase tracking-[0.2em] mt-2">
-                                                <Download className="w-3 h-3 mr-2" /> Get Full PDF
+                                            </Link>
+                                            <Button
+                                                onClick={() => alert(`Starting intense study mode for ${subject.title}... Focus enabled!`)}
+                                                className="w-full h-10 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-bold uppercase tracking-wider"
+                                            >
+                                                Learn Now
                                             </Button>
                                         </div>
+
+                                        <Button variant="ghost" size="sm" className="w-full h-9 rounded-xl text-muted-foreground hover:text-primary text-xs font-bold uppercase tracking-wider">
+                                            <Download className="w-3 h-3 mr-2" /> Get Syllabus PDF
+                                        </Button>
                                     </div>
-                                </ScaleOnHover>
+                                </div>
                             </StaggerItem>
                         ))}
                     </StaggerContainer>
                 </div>
             </PageWrapper>
-        </main>
+        </main >
     );
 }
