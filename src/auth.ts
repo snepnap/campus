@@ -22,7 +22,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 const user = await Student.findOne({ enrollmentNo: credentials.enrollmentNo as string });
 
                 if (!user || !user.password) {
-                    throw new Error("No user found with this enrollment number.");
+                    console.log("Auth Error: User not found or no password", credentials.enrollmentNo);
+                    return null;
                 }
 
                 const isPasswordCorrect = await bcrypt.compare(
@@ -31,7 +32,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 );
 
                 if (!isPasswordCorrect) {
-                    throw new Error("Invalid password.");
+                    console.log("Auth Error: Invalid password for", credentials.enrollmentNo);
+                    return null;
                 }
 
                 return {

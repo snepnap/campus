@@ -66,7 +66,7 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        setError("Invalid credentials. Please check your enrollment number and password.");
+        setError("Invalid Enrollment No. or Password. Please try again.");
       } else {
         router.push(isRegistering ? `/onboarding?name=${encodeURIComponent(formData.name)}&enrollmentNo=${encodeURIComponent(formData.enrollmentNo)}` : '/dashboard');
       }
