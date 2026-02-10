@@ -4,6 +4,7 @@ import { Home, BookOpen, Calendar, User, Settings, LogOut, FileText, Menu, Calcu
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 
 import { cn } from "@/lib/utils";
 import {
@@ -54,6 +55,14 @@ function SidebarContent() {
             ]
         }
     ];
+
+    const [user, setUser] = useState<any>(null);
+
+    useEffect(() => {
+        fetch('/api/me').then(res => res.json()).then(data => {
+            if (data.success) setUser(data.data);
+        });
+    }, []);
 
     return (
         <div className="flex flex-col h-full bg-card/40 backdrop-blur-2xl border-r border-white/10 relative overflow-hidden">
@@ -125,16 +134,16 @@ function SidebarContent() {
                     <div className="flex items-center gap-4">
                         <div className="relative">
                             <Avatar className="h-12 w-12 border-2 border-white/20 rounded-2xl">
-                                <AvatarImage src="https://github.com/shadcn.png" className="rounded-2xl" />
-                                <AvatarFallback>AK</AvatarFallback>
+                                <AvatarImage src={user?.avatar || "https://github.com/shadcn.png"} className="rounded-2xl object-cover" />
+                                <AvatarFallback>{user?.name?.[0] || "U"}</AvatarFallback>
                             </Avatar>
                             <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-white dark:border-black rounded-full" />
                         </div>
                         <div className="flex flex-col min-w-0">
-                            <span className="text-sm font-black truncate leading-none mb-1">Anand Kumar</span>
+                            <span className="text-sm font-black truncate leading-none mb-1 capitalize">{user?.name || "Student"}</span>
                             <div className="flex items-center gap-1.5 opacity-60">
                                 <Zap className="w-3 h-3 text-amber-500 fill-amber-500" />
-                                <span className="text-[10px] font-bold uppercase tracking-wider">Level 12</span>
+                                <span className="text-[10px] font-bold uppercase tracking-wider">{user?.enrollmentNo || "Guest"}</span>
                             </div>
                         </div>
                     </div>

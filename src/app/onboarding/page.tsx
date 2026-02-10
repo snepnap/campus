@@ -3,49 +3,47 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GraduationCap, Book, Award, BookOpen, CheckCircle, ArrowRight, ArrowLeft, Star, Heart, Activity, Globe, Sparkles } from 'lucide-react';
+import { GraduationCap, Book, Award, BookOpen, CheckCircle, ArrowRight, ArrowLeft, Star, Heart, Activity, Globe, Sparkles, User, Image as ImageIcon } from 'lucide-react';
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-// import { departments } from "@/data/syllabus-data"; // REMOVED
+import { ggvNepCourses, ggvDepartments } from "@/data/ggv-data";
 import { PageWrapper, FadeIn, ScaleOnHover } from "@/components/page-motion";
 
 export default function OnboardingPage() {
     const router = useRouter();
     const [step, setStep] = useState(1);
-    const [departments, setDepartments] = useState<string[]>([]);
-    const [loadingDepartments, setLoadingDepartments] = useState(true);
+    const [departments] = useState<string[]>(ggvDepartments.map(d => d.name));
+    const [loadingDepartments] = useState(false);
 
     const [formData, setFormData] = useState({
         semester: "",
         year: "",
-        department: "Computer Science & IT",
+        department: "",
         cgpa: "",
         minor: "",
         mdc: "",
         sec: "",
-        vac: ""
+        vac: "",
+        avatar: ""
     });
 
-    useEffect(() => {
-        const fetchDepartments = async () => {
-            try {
-                const res = await fetch('/api/syllabus?mode=departments');
-                const data = await res.json();
-                if (data.success) {
-                    setDepartments(data.data);
-                }
-            } catch (error) {
-                console.error("Failed to fetch departments", error);
-            } finally {
-                setLoadingDepartments(false);
-            }
-        };
+    const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setFormData(prev => ({ ...prev, avatar: reader.result as string }));
+            };
+            reader.readAsDataURL(file);
+        }
+    };
 
-        fetchDepartments();
-    }, []);
+    // Removed detailed useEffect fetching for simplicity as we have local data now
+    // But keeping structure in case we want to revert to API
+
 
     const handleInputChange = (field: string, value: string) => {
         setFormData(prev => ({ ...prev, [field]: value }));
@@ -54,8 +52,20 @@ export default function OnboardingPage() {
     const nextStep = () => setStep(step + 1);
     const prevStep = () => setStep(step - 1);
 
-    const handleSubmit = () => {
-        router.push('/dashboard');
+    const handleSubmit = async () => {
+        try {
+            const res = await fetch('/api/me', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            if (res.ok) {
+                router.push('/dashboard');
+            }
+        } catch (error) {
+            console.error("Failed to save profile", error);
+        }
     };
 
     const stepProgress = (step / 2) * 100;
@@ -101,6 +111,21 @@ export default function OnboardingPage() {
                                 exit={{ opacity: 0, scale: 1.05 }}
                                 className="space-y-8"
                             >
+                                <div className="space-y-4 flex flex-col items-center justify-center p-6 bg-muted/20 rounded-[2rem] border-2 border-dashed border-muted-foreground/20 hover:border-primary/50 transition-colors group cursor-pointer relative overflow-hidden">
+                                    <input type="file" accept="image/*" onChange={handleFile} className="absolute inset-0 opacity-0 cursor-pointer z-20" />
+                                    <div className="w-24 h-24 rounded-full bg-muted/40 flex items-center justify-center relative z-10 overflow-hidden">
+                                        {formData.avatar ? (
+                                            <img src={formData.avatar} alt="Profile" className="w-full h-full object-cover" />
+                                        ) : (
+                                            <User className="w-10 h-10 text-muted-foreground group-hover:text-primary transition-colors" />
+                                        )}
+                                    </div>
+                                    <div className="text-center z-10">
+                                        <p className="font-bold text-sm group-hover:text-primary transition-colors">Upload Profile Picture</p>
+                                        <p className="text-xs text-muted-foreground">Tap to select image</p>
+                                    </div>
+                                </div>
+
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     <div className="space-y-3">
                                         <Label className="text-sm font-black uppercase tracking-wider text-muted-foreground ml-1 flex items-center gap-2">
@@ -196,10 +221,10 @@ export default function OnboardingPage() {
                                             <SelectTrigger className="h-14 rounded-2xl bg-muted/30 border-0 font-bold">
                                                 <SelectValue placeholder="Select MDC" />
                                             </SelectTrigger>
-                                            <SelectContent className="rounded-2xl">
-                                                <SelectItem value="env" className="font-bold py-3">Environmental Science</SelectItem>
-                                                <SelectItem value="yoga" className="font-bold py-3">Yoga & Medicine</SelectItem>
-                                                <SelectItem value="art" className="font-bold py-3">Fine Arts</SelectItem>
+                                            <SelectContent className="rounded-2xl max-h-[300px]">
+                                                {ggvNepCourses.MDC.map((course) => (
+                                                    <SelectItem key={course} value={course} className="font-bold py-3">{course}</SelectItem>
+                                                ))}
                                             </SelectContent>
                                         </Select>
                                     </div>
@@ -212,10 +237,10 @@ export default function OnboardingPage() {
                                             <SelectTrigger className="h-14 rounded-2xl bg-muted/30 border-0 font-bold">
                                                 <SelectValue placeholder="Select SEC" />
                                             </SelectTrigger>
-                                            <SelectContent className="rounded-2xl">
-                                                <SelectItem value="python" className="font-bold py-3">Python Programming</SelectItem>
-                                                <SelectItem value="web" className="font-bold py-3">Web Development</SelectItem>
-                                                <SelectItem value="soft" className="font-bold py-3">Communication Skills</SelectItem>
+                                            <SelectContent className="rounded-2xl max-h-[300px]">
+                                                {ggvNepCourses.SEC.map((course) => (
+                                                    <SelectItem key={course} value={course} className="font-bold py-3">{course}</SelectItem>
+                                                ))}
                                             </SelectContent>
                                         </Select>
                                     </div>
@@ -226,10 +251,10 @@ export default function OnboardingPage() {
                                             <SelectTrigger className="h-14 rounded-2xl bg-muted/30 border-0 font-bold">
                                                 <SelectValue placeholder="Select VAC" />
                                             </SelectTrigger>
-                                            <SelectContent className="rounded-2xl">
-                                                <SelectItem value="ethics" className="font-bold py-3">Digital Ethics</SelectItem>
-                                                <SelectItem value="sports" className="font-bold py-3">Sports & Fitness</SelectItem>
-                                                <SelectItem value="nss" className="font-bold py-3">Social Service</SelectItem>
+                                            <SelectContent className="rounded-2xl max-h-[300px]">
+                                                {ggvNepCourses.VAC.map((course) => (
+                                                    <SelectItem key={course} value={course} className="font-bold py-3">{course}</SelectItem>
+                                                ))}
                                             </SelectContent>
                                         </Select>
                                     </div>
@@ -259,7 +284,7 @@ export default function OnboardingPage() {
                         )}
                     </div>
                 </div>
-            </main>
-        </div>
+            </main >
+        </div >
     );
 }

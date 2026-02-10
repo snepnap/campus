@@ -17,6 +17,15 @@ const StudentSchema = new mongoose.Schema({
     },
     course: String,
     semester: String,
+    year: { // Current year (1, 2, 3, 4)
+        type: Number,
+        default: 1
+    },
+    // NEP Electives
+    minor: String,
+    mdc: String,
+    sec: String,
+    vac: String,
     cgpa: {
         type: Number,
         default: 0.0,

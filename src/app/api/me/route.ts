@@ -21,3 +21,36 @@ export async function GET() {
         return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 }
+
+// Update Student Profile
+export async function PUT(request: Request) {
+    try {
+        await dbConnect();
+
+        const body = await request.json();
+
+        // TODO: Get enrollment number from session
+        const enrollmentNo = "GGV/22/0315";
+
+        const student = await Student.findOneAndUpdate(
+            { enrollmentNo },
+            {
+                $set: {
+                    ...body, // Spread other fields like name, bio, etc.
+                    course: body.department, // Store department as course
+                    // Explicitly map special fields if needed, but direct map is fine
+                }
+            },
+            { new: true, upsert: true } // Upsert: create if doesn't exist? Ideally authenticate first.
+        );
+
+        if (!student) {
+            return NextResponse.json({ success: false, message: "User not found" }, { status: 404 });
+        }
+
+        return NextResponse.json({ success: true, data: student });
+
+    } catch (error: any) {
+        return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    }
+}
