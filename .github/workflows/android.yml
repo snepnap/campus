@@ -17,6 +17,8 @@ jobs:
           node-version: 20
           
       - name: Install Dependencies
+        # Removed npm run build to avoid environment variable issues in CI
+        # The app uses a live server URL, so local build artifacts aren't strictly required beyond the existing public/ folder
         run: npm install && npm install @capacitor/core @capacitor/cli @capacitor/android
 
       - name: Setup Java
