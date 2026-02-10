@@ -4,7 +4,7 @@
     "webDir": "public",
     "bundledWebRuntime": false,
     "server": {
-        "url": "https://YOUR-VERCEL-DEPLOYMENT-URL.vercel.app",
+        "url": "https://college-connect-xi.vercel.app",
         "cleartext": true
     }
 }
