@@ -36,22 +36,18 @@ function SidebarContent() {
             items: [
                 { href: "/syllabus", icon: BookOpen, label: "Syllabus" },
                 { href: "/notes", icon: FileText, label: "Notes & PYQs" },
-                { href: "/cgpa", icon: GraduationCap, label: "CGPA Calculator" },
             ]
         },
         {
             title: "Community",
             items: [
                 { href: "/events", icon: Calendar, label: "Events" },
-                { href: "/marketplace", icon: ShoppingBag, label: "Marketplace" },
-                { href: "/rewards", icon: Gift, label: "Rewards Store" },
             ]
         },
         {
             title: "User",
             items: [
                 { href: "/profile", icon: User, label: "My Profile" },
-                { href: "/settings", icon: Settings, label: "Settings" },
             ]
         }
     ];
@@ -149,7 +145,13 @@ function SidebarContent() {
                     </div>
                 </div>
 
-                <button className="flex items-center justify-center gap-3 w-full py-4 px-6 text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-2xl transition-all group overflow-hidden relative border border-white/5">
+                <button
+                    onClick={() => {
+                        // Clear any local storage/cookies if necessary
+                        window.location.href = "/";
+                    }}
+                    className="flex items-center justify-center gap-3 w-full py-4 px-6 text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-2xl transition-all group overflow-hidden relative border border-white/5"
+                >
                     <LogOut className="h-4 w-4 relative z-10 group-hover:-translate-x-1 transition-transform" />
                     <span className="relative z-10">Logout</span>
                     <div className="absolute inset-0 translate-y-full group-hover:translate-y-0 bg-destructive/5 transition-transform duration-300" />

@@ -13,7 +13,8 @@ import {
     Zap,
     TrendingUp,
     ArrowUpRight,
-    Gift
+    Gift,
+    BookOpen
 } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -138,38 +139,64 @@ export default function Dashboard() {
                     </div>
                 </header>
 
-                {/* Stats Grid */}
-                <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-                    {stats.map((stat, index) => (
-                        <StaggerItem key={index}>
+                {/* Quick Actions Grid */}
+                <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                    <Link href="/syllabus">
+                        <StaggerItem>
                             <ScaleOnHover className="h-full">
-                                <div className={`relative overflow-hidden rounded-[2rem] p-6 h-full ${stat.bg} ${stat.shadow} shadow-lg group transition-all duration-300 hover:shadow-2xl`}>
-                                    <div className="relative z-10 flex flex-col h-full justify-between">
-                                        <div className="flex justify-between items-start mb-4">
-                                            <div className="p-3 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 group-hover:scale-110 transition-transform duration-300">
-                                                <stat.icon className={`w-6 h-6 ${stat.color}`} />
-                                            </div>
-                                            <Badge className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-md px-3 py-1">
-                                                {stat.label}
-                                            </Badge>
+                                <div className="h-full group relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-violet-600 to-indigo-600 p-8 shadow-2xl shadow-indigo-500/20">
+                                    <div className="relative z-10 flex flex-col items-center text-center gap-4">
+                                        <div className="p-4 bg-white/10 rounded-2xl backdrop-blur-md group-hover:scale-110 transition-transform">
+                                            <BookOpen className="w-10 h-10 text-white" />
                                         </div>
-
                                         <div>
-                                            <h3 className={`text-4xl font-bold ${stat.color} mb-1 tracking-tight`}>{stat.value}</h3>
-                                            <p className="text-white/80 text-sm font-medium flex items-center gap-2">
-                                                <span className="bg-white/20 px-1.5 rounded text-white font-bold">{stat.trend}</span>
-                                                {stat.trendLabel}
-                                            </p>
+                                            <h3 className="text-2xl font-bold text-white mb-2">Syllabus</h3>
+                                            <p className="text-white/70 text-sm font-medium">View your course structure</p>
                                         </div>
                                     </div>
-
-                                    {/* Abstract Shapes */}
-                                    <div className="absolute top-0 right-0 -mt-8 -mr-8 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:blur-3xl transition-all duration-500" />
-                                    <div className="absolute bottom-0 left-0 -mb-8 -ml-8 w-24 h-24 bg-black/10 rounded-full blur-xl" />
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-10 -mt-10" />
                                 </div>
                             </ScaleOnHover>
                         </StaggerItem>
-                    ))}
+                    </Link>
+
+                    <Link href="/notes">
+                        <StaggerItem>
+                            <ScaleOnHover className="h-full">
+                                <div className="h-full group relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-emerald-500 to-teal-600 p-8 shadow-2xl shadow-emerald-500/20">
+                                    <div className="relative z-10 flex flex-col items-center text-center gap-4">
+                                        <div className="p-4 bg-white/10 rounded-2xl backdrop-blur-md group-hover:scale-110 transition-transform">
+                                            <FileText className="w-10 h-10 text-white" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-2xl font-bold text-white mb-2">Notes & PYQs</h3>
+                                            <p className="text-white/70 text-sm font-medium">Access study materials</p>
+                                        </div>
+                                    </div>
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-10 -mt-10" />
+                                </div>
+                            </ScaleOnHover>
+                        </StaggerItem>
+                    </Link>
+
+                    <Link href="/events">
+                        <StaggerItem>
+                            <ScaleOnHover className="h-full">
+                                <div className="h-full group relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-amber-500 to-orange-600 p-8 shadow-2xl shadow-orange-500/20">
+                                    <div className="relative z-10 flex flex-col items-center text-center gap-4">
+                                        <div className="p-4 bg-white/10 rounded-2xl backdrop-blur-md group-hover:scale-110 transition-transform">
+                                            <Calendar className="w-10 h-10 text-white" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-2xl font-bold text-white mb-2">Events</h3>
+                                            <p className="text-white/70 text-sm font-medium">Check upcoming activities</p>
+                                        </div>
+                                    </div>
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-10 -mt-10" />
+                                </div>
+                            </ScaleOnHover>
+                        </StaggerItem>
+                    </Link>
                 </StaggerContainer>
 
                 {/* Content Grid */}

@@ -98,9 +98,6 @@ export default function EventsPage() {
                                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary" />
                                 <Input placeholder="Search for events..." className="h-14 pl-12 rounded-2xl bg-muted/30 border-0 font-bold" />
                             </div>
-                            <Button className="h-14 px-8 rounded-2xl bg-secondary text-secondary-foreground font-black tracking-widest text-[10px] shadow-lg shadow-secondary/20">
-                                <Ticket className="w-4 h-4 mr-2" /> MY TICKETS
-                            </Button>
                         </div>
                     </header>
 
@@ -150,12 +147,6 @@ export default function EventsPage() {
                                                     <p className="font-bold truncate max-w-xs">{featuredEvent.location}</p>
                                                 </div>
                                             </div>
-                                            <Button
-                                                onClick={() => alert("Registration Successful! Your digital ticket has been added to 'MY TICKETS'.")}
-                                                className="h-14 px-10 rounded-2xl bg-white text-black font-black hover:bg-white/90 shadow-xl ml-auto"
-                                            >
-                                                Register Now
-                                            </Button>
                                         </div>
                                     </div>
                                 </div>
@@ -197,9 +188,6 @@ export default function EventsPage() {
                                         </ScaleOnHover>
                                     </StaggerItem>
                                 ))}
-                                <Button variant="outline" className="w-full h-14 rounded-2xl border-dashed opacity-50 hover:opacity-100 font-black uppercase text-[10px] tracking-widest">
-                                    View Past Events
-                                </Button>
                             </StaggerContainer>
                         </div>
                     </div>
