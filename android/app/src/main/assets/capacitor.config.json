@@ -1,0 +1,16 @@
+{
+	"appId": "com.ggu.connect",
+	"appName": "GGU Connect Universal",
+	"webDir": "public",
+	"server": {
+		"url": "https://college-connect-xi.vercel.app",
+		"cleartext": true,
+		"allowNavigation": [
+			"*"
+		],
+		"androidScheme": "https"
+	},
+	"android": {
+		"allowMixedContent": true
+	}
+}
