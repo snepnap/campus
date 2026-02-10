@@ -1,4 +1,10 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# College Connect 🎓
+
+[![Download APK](https://img.shields.io/badge/Download-Android%20App-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/snepnap/campus/releases/download/nightly/app-debug.apk)
+
+**Latest Build Status:** [![Build Android APK](https://github.com/snepnap/campus/actions/workflows/android.yml/badge.svg)](https://github.com/snepnap/campus/actions/workflows/android.yml)
+
+This is a premium student portal for GGU Bilaspur, built with [Next.js](https://nextjs.org).
 
 ## Getting Started
 
