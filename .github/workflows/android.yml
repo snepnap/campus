@@ -25,14 +25,6 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Initialize Capacitor Android
-
-        run: npx cap add android
-        
-      - name: Build Next.js (Static)
-        # We need a build to exist, even if Capacitor uses the live server URL
-        run: npm run build
-
       - name: Sync Capacitor
         run: npx cap sync
 
