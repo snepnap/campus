@@ -1,13 +1,7 @@
 {
     "appId": "com.ggu.connect",
     "appName": "GGU Connect",
-    "webDir": "public",
-    "server": {
-        "url": "https://campus-steel.vercel.app",
-        "allowNavigation": [
-            "*"
-        ]
-    },
+    "webDir": "out",
     "android": {
         "allowMixedContent": true
     },

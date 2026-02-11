@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 
+import { fetchApi } from "@/lib/api-client";
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -36,7 +37,7 @@ export default function ProfilePage() {
     const router = useRouter();
 
     useEffect(() => {
-        fetch('/api/me')
+        fetchApi('/api/me')
             .then(res => res.json())
             .then(data => {
                 if (data.success) {

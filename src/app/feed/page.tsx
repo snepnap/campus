@@ -29,6 +29,7 @@ import { PageWrapper, StaggerContainer, StaggerItem, ScaleOnHover } from "@/comp
 import { cn } from "@/lib/utils";
 
 
+import { fetchApi } from "@/lib/api-client";
 
 const trendingTopics = [
     { name: "#Kulotsav2024", count: "1.2k posts", icon: Flame },
@@ -48,8 +49,8 @@ export default function FeedPage() {
         async function fetchData() {
             try {
                 const [userRes, postsRes] = await Promise.all([
-                    fetch('/api/me'),
-                    fetch('/api/feed')
+                    fetchApi('/api/me'),
+                    fetchApi('/api/feed')
                 ]);
 
                 const userData = await userRes.json();
@@ -87,7 +88,7 @@ export default function FeedPage() {
                 trending: false
             };
 
-            const res = await fetch('/api/feed', {
+            const res = await fetchApi('/api/feed', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newPost)

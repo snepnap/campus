@@ -20,22 +20,12 @@ jobs:
           node-version: 20
           
       - name: Install Dependencies
-        # Removed npm run build to avoid environment variable issues in CI
-        # The app uses a live server URL, so local build artifacts aren't strictly required beyond the existing public/ folder
-        run: npm install && npm install @capacitor/core @capacitor/cli @capacitor/android
+        run: npm ci
 
-      - name: Setup Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'zulu'
-          java-version: '17'
-
-      - name: Create fallback build artifact
-        run: |
-          mkdir -p out
-          touch out/index.html
-          mkdir -p public
-          touch public/robots.txt
+      - name: Build Next.js App
+        env:
+          NEXT_PUBLIC_API_URL: https://campus-steel.vercel.app
+        run: npm run build
 
       - name: Sync Capacitor
         run: npx cap sync android

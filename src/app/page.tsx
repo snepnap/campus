@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { ModeToggle } from "@/components/mode-toggle";
 import { PageWrapper, FadeIn, ScaleOnHover } from "@/components/page-motion";
 import { signIn } from "next-auth/react";
+import { fetchApi } from "@/lib/api-client";
 
 export default function LoginPage() {
   const [isRegistering, setIsRegistering] = useState(false);
@@ -25,6 +26,7 @@ export default function LoginPage() {
   const router = useRouter();
 
   useEffect(() => setMounted(true), []);
+
 
   const handleSubmit = async () => {
     setError("");
@@ -44,7 +46,7 @@ export default function LoginPage() {
     try {
       if (isRegistering) {
         // Register first
-        const res = await fetch('/api/auth/register', {
+        const res = await fetchApi('/api/auth/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData)

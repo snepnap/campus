@@ -27,6 +27,7 @@ import {
     DialogFooter,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { fetchApi } from "@/lib/api-client";
 
 interface Resource {
     _id: string;
@@ -69,7 +70,7 @@ export default function NotesPage() {
             if (semester !== 'all') params.append('semester', semester);
             if (searchQuery) params.append('search', searchQuery);
 
-            const res = await fetch(`/api/resources?${params.toString()}`);
+            const res = await fetchApi(`/api/resources?${params.toString()}`);
             const data = await res.json();
             if (data.success) {
                 setResources(data.data);
@@ -89,7 +90,7 @@ export default function NotesPage() {
 
         try {
             // Simulate file upload metadata
-            const res = await fetch('/api/resources', {
+            const res = await fetchApi('/api/resources', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -246,7 +247,7 @@ export default function NotesPage() {
                             <div key={res._id} className="group bg-card border border-border/60 rounded-3xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between hover:shadow-lg hover:border-border transition-all duration-300 gap-4">
                                 <div className="flex items-center gap-5">
                                     <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 transition-colors ${res.type === 'Notes' ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400' :
-                                            res.type === 'PYQ' ? 'bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400' : 'bg-purple-50 text-purple-600 dark:bg-purple-500/10 dark:text-purple-400'
+                                        res.type === 'PYQ' ? 'bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400' : 'bg-purple-50 text-purple-600 dark:bg-purple-500/10 dark:text-purple-400'
                                         }`}>
                                         <FileText className="w-7 h-7" />
                                     </div>

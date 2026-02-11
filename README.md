@@ -4,6 +4,14 @@
 
 **Latest Build Status:** [![Build Android APK](https://github.com/snepnap/campus/actions/workflows/android.yml/badge.svg)](https://github.com/snepnap/campus/actions/workflows/android.yml)
 
+## 📱 Installation Instructions
+
+1.  **Download**: Click the "Download APK" button above to get the latest `app-debug.apk`.
+2.  **Install**: Open the file on your Android device. You may need to "Allow installation from this source" if prompted.
+3.  **Launch**: Open "GGU Connect" and log in with your credentials.
+
+> **Note**: This is a development build. Play Protect might warn you about an unrecognized developer. You can safely tap "More details" -> "Install anyway".
+
 This is a premium student portal for GGU Bilaspur, built with [Next.js](https://nextjs.org).
 
 ## Getting Started

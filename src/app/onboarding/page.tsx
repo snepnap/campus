@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { fetchApi } from "@/lib/api-client";
 import { ggvNepCourses, ggvDepartments } from "@/data/ggv-data";
 import { PageWrapper, FadeIn, ScaleOnHover } from "@/components/page-motion";
 
@@ -22,6 +23,7 @@ export default function OnboardingPage() {
 }
 
 function OnboardingContent() {
+
     const router = useRouter();
     const [step, setStep] = useState(1);
     const [departments] = useState<string[]>(ggvDepartments.map(d => d.name));
@@ -66,10 +68,6 @@ function OnboardingContent() {
         }
     };
 
-    // Removed detailed useEffect fetching for simplicity as we have local data now
-    // But keeping structure in case we want to revert to API
-
-
     const handleInputChange = (field: string, value: string) => {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
@@ -79,7 +77,7 @@ function OnboardingContent() {
 
     const handleSubmit = async () => {
         try {
-            const res = await fetch('/api/me', {
+            const res = await fetchApi('/api/me', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
