@@ -21,6 +21,8 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 
+import { fetchApi } from "@/lib/api-client";
+
 function SidebarContent() {
     const pathname = usePathname();
 
@@ -56,7 +58,7 @@ function SidebarContent() {
     const [user, setUser] = useState<any>(null);
 
     useEffect(() => {
-        fetch('/api/me').then(res => res.json()).then(data => {
+        fetchApi('/api/me').then(res => res.json()).then(data => {
             if (data.success) setUser(data.data);
         });
     }, []);

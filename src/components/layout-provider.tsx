@@ -10,7 +10,7 @@ export default function LayoutProvider({ children }: { children: React.ReactNode
     const isAuthPage = pathname === '/' || pathname === '/onboarding';
 
     return (
-        <SessionProvider>
+        <SessionProvider basePath="https://campus-steel.vercel.app/api/auth">
             <div className="min-h-screen bg-background flex overflow-x-hidden">
                 {!isAuthPage && <Sidebar />}
                 <div className={cn("flex-1 min-h-screen relative", !isAuthPage && "md:ml-72")}>
