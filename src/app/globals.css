@@ -35,38 +35,6 @@
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
-
-  @keyframes accordion-down {
-    from {
-      height: 0
-    }
-
-    to {
-      height: var(--radix-accordion-content-height)
-    }
-  }
-
-  @keyframes accordion-up {
-    from {
-      height: var(--radix-accordion-content-height)
-    }
-
-    to {
-      height: 0
-    }
-  }
-
-  @keyframes float {
-
-    0%,
-    100% {
-      transform: translateY(0px);
-    }
-
-    50% {
-      transform: translateY(-10px);
-    }
-  }
 }
 
 @layer base {
@@ -81,68 +49,68 @@
 }
 
 :root {
-  /* Ultra-Premium Cyberpunk-ish Palette */
-  --background: 230 40% 98%;
-  --foreground: 230 60% 10%;
+  /* Clean Professional Palette */
+  --background: 210 20% 98%;
+  --foreground: 222 47% 11%;
 
   --card: 0 0% 100%;
-  --card-foreground: 230 60% 10%;
+  --card-foreground: 222 47% 11%;
 
   --popover: 0 0% 100%;
-  --popover-foreground: 230 60% 10%;
+  --popover-foreground: 222 47% 11%;
 
-  --primary: 250 84% 54%;
-  /* Deep Electric Indigo */
+  --primary: 221 83% 53%;
+  /* Crisp Blue like the reference */
   --primary-foreground: 210 40% 98%;
 
-  --secondary: 190 90% 50%;
-  /* Cyber Cyan */
-  --secondary-foreground: 230 60% 10%;
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222 47% 11%;
 
-  --muted: 230 20% 94%;
-  --muted-foreground: 230 10% 40%;
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
 
-  --accent: 250 84% 54%;
-  --accent-foreground: 210 40% 98%;
+  --accent: 210 40% 96.1%;
+  --accent-foreground: 222 47% 11%;
 
-  --destructive: 0 84% 60%;
+  --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 210 40% 98%;
 
-  --border: 230 20% 90%;
-  --input: 230 20% 90%;
-  --ring: 250 84% 54%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 221 83% 53%;
 
-  --radius: 1.5rem;
+  --radius: 1rem;
+  /* More rounded like IOS */
 }
 
 .dark {
-  --background: 230 50% 4%;
+  --background: 222 47% 11%;
   --foreground: 210 40% 98%;
 
-  --card: 230 50% 6%;
+  --card: 222 47% 11%;
   --card-foreground: 210 40% 98%;
 
-  --popover: 230 50% 5%;
+  --popover: 222 47% 11%;
   --popover-foreground: 210 40% 98%;
 
-  --primary: 250 84% 64%;
-  --primary-foreground: 230 50% 4%;
+  --primary: 217 91% 60%;
+  --primary-foreground: 222 47% 11%;
 
-  --secondary: 190 90% 60%;
-  --secondary-foreground: 230 50% 4%;
+  --secondary: 217 32% 17%;
+  --secondary-foreground: 210 40% 98%;
 
-  --muted: 230 30% 12%;
-  --muted-foreground: 230 10% 70%;
+  --muted: 217 32% 17%;
+  --muted-foreground: 215 20.2% 65.1%;
 
-  --accent: 250 84% 64%;
+  --accent: 217 32% 17%;
   --accent-foreground: 210 40% 98%;
 
-  --destructive: 0 62% 40%;
+  --destructive: 0 62.8% 30.6%;
   --destructive-foreground: 210 40% 98%;
 
-  --border: 230 30% 15%;
-  --input: 230 30% 15%;
-  --ring: 250 84% 64%;
+  --border: 217 32% 17%;
+  --input: 217 32% 17%;
+  --ring: 224 76% 48%;
 }
 
 @layer base {
@@ -151,25 +119,6 @@
   }
 
   body {
-    @apply bg-background text-foreground transition-colors duration-500 overflow-x-hidden;
-    background-image: radial-gradient(circle at top right, hsla(var(--primary), 0.05), transparent 40%),
-      radial-gradient(circle at bottom left, hsla(var(--secondary), 0.05), transparent 40%);
+    @apply bg-background text-foreground antialiased selection:bg-primary/10 selection:text-primary;
   }
-}
-
-/* Clean Modern Elements */
-.glass-panel {
-  @apply bg-card/60 dark:bg-card/40 backdrop-blur-md border border-border/50 shadow-sm transition-all duration-300;
-}
-
-.text-gradient {
-  @apply text-foreground font-extrabold;
-}
-
-.card-hover {
-  @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
-}
-
-.bg-mesh {
-  @apply bg-background;
 }

@@ -1,29 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     FileText,
     Download,
-    Plus,
+    Upload,
     Search,
-    ChevronRight,
-    Home,
-    FolderOpen,
-    ArrowLeft,
-    Filter,
-    BookOpen,
-    Clock,
-    Zap,
-    Cpu,
-    Dna,
-    Layers
 } from 'lucide-react';
-import { MobileNav } from "@/components/sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
     Select,
     SelectContent,
@@ -31,215 +16,269 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { PageWrapper, StaggerContainer, StaggerItem, ScaleOnHover } from "@/components/page-motion";
-import { FolderCard } from "@/components/folder-card";
+import { Badge } from "@/components/ui/badge";
 import {
     Dialog,
     DialogContent,
     DialogDescription,
-    DialogFooter,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
+    DialogFooter,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 
+interface Resource {
+    _id: string;
+    title: string;
+    type: string;
+    subject: string;
+    department: string;
+    semester: string;
+    author: string;
+    fileUrl: string;
+    size: string;
+    createdAt: string;
+}
+
 export default function NotesPage() {
-    const [viewMode, setViewMode] = useState<'folders' | 'files'>('folders');
-    const [currentPath, setCurrentPath] = useState<string[]>([]);
+    const [department, setDepartment] = useState("all");
+    const [semester, setSemester] = useState("all");
     const [searchQuery, setSearchQuery] = useState("");
-    const [activeTab, setActiveTab] = useState("notes");
+    const [resources, setResources] = useState<Resource[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [uploadOpen, setUploadOpen] = useState(false);
 
-    const [departmentFilter, setDepartmentFilter] = useState("all");
-    const [semesterFilter, setSemesterFilter] = useState("all");
+    // Upload Form State
+    const [title, setTitle] = useState("");
+    const [subject, setSubject] = useState("");
+    const [type, setType] = useState("Notes");
+    const [dept, setDept] = useState("cse");
+    const [sem, setSem] = useState("1");
+    const [file, setFile] = useState<File | null>(null);
 
-    const semesters = [
-        { id: "sem1", title: "Semester 1", count: 12, icon: Cpu, color: "text-blue-500", bg: "bg-blue-500/10" },
-        { id: "sem2", title: "Semester 2", count: 8, icon: Dna, color: "text-indigo-500", bg: "bg-indigo-500/10" },
-        { id: "sem3", title: "Semester 3", count: 15, icon: Zap, color: "text-purple-500", bg: "bg-purple-500/10" },
-        { id: "sem4", title: "Semester 4", count: 10, icon: Layers, color: "text-pink-500", bg: "bg-pink-500/10" },
-    ];
+    useEffect(() => {
+        fetchResources();
+    }, [department, semester, searchQuery]);
 
-    const handleFolderClick = (folderName: string) => {
-        setCurrentPath([...currentPath, folderName]);
-        setViewMode('files');
+    const fetchResources = async () => {
+        setLoading(true);
+        try {
+            const params = new URLSearchParams();
+            if (department !== 'all') params.append('department', department);
+            if (semester !== 'all') params.append('semester', semester);
+            if (searchQuery) params.append('search', searchQuery);
+
+            const res = await fetch(`/api/resources?${params.toString()}`);
+            const data = await res.json();
+            if (data.success) {
+                setResources(data.data);
+            }
+        } catch (error) {
+            console.error("Error fetching resources:", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const handleBackClick = () => {
-        if (currentPath.length > 0) {
-            const newPath = [...currentPath];
-            newPath.pop();
-            setCurrentPath(newPath);
-            if (newPath.length === 0) setViewMode('folders');
-        } else {
-            setViewMode('folders');
+    const handleUpload = async () => {
+        if (!title || !subject || !dept || !sem || !type) {
+            alert("Please fill in all required fields.");
+            return;
+        }
+
+        try {
+            // Simulate file upload metadata
+            const res = await fetch('/api/resources', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    title,
+                    subject,
+                    type,
+                    department: dept,
+                    semester: sem,
+                    author: "Student User", // Replace with session user name if avail
+                    fileUrl: file ? `/uploads/${file.name}` : "#",
+                    size: file ? `${(file.size / (1024 * 1024)).toFixed(2)} MB` : "Unknown"
+                })
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                setUploadOpen(false);
+                fetchResources(); // Refresh list
+                setTitle("");
+                setSubject("");
+                setFile(null);
+                alert("Success! Resource uploaded successfully.");
+            } else {
+                alert("Upload Failed: " + (data.message || "Something went wrong."));
+            }
+        } catch (error) {
+            console.error("Upload error:", error);
+            alert("Error: An error occurred during upload.");
         }
     };
 
     return (
-        <main className="p-4 md:p-8 overflow-x-hidden relative">
-            {/* Background Decor */}
-            <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-                <div className="absolute top-[20%] right-[-10%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px]" />
-                <div className="absolute bottom-[20%] left-[-10%] w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[120px]" />
-            </div>
+        <main className="min-h-screen bg-background p-6 md:p-10 pb-24">
+            <div className="max-w-4xl mx-auto space-y-8">
 
-            <PageWrapper>
-                <div className="relative z-10 flex flex-col gap-10">
-                    {/* Futuristic Header */}
-                    <header className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 bg-card/40 backdrop-blur-xl p-8 rounded-[2.5rem] border border-white/10 shadow-xl">
-                        <div className="flex items-center gap-6 w-full lg:w-auto">
-                            <MobileNav />
-                            <div className="p-4 bg-primary/10 rounded-3xl border border-primary/20">
-                                <FolderOpen className="w-10 h-10 text-primary" />
-                            </div>
-                            <div>
-                                <h1 className="text-4xl font-black tracking-tighter uppercase leading-none mb-2">Notes & <span className="text-gradient">PYQs</span></h1>
-                                <p className="text-xs font-black text-muted-foreground uppercase tracking-[0.3em]">Access course notes and previous year questions</p>
-                            </div>
-                        </div>
+                {/* Header */}
+                <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                    <div>
+                        <h1 className="text-3xl font-bold tracking-tight text-foreground">Resource Hub</h1>
+                        <p className="text-muted-foreground mt-1 text-lg">Notes, PYQs, and Study Material</p>
+                    </div>
 
-                        <div className="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto">
-                            <div className="relative flex-1 sm:w-80 w-full group">
-                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                                <Input
-                                    placeholder="Search for notes..."
-                                    className="h-14 pl-12 rounded-2xl bg-muted/40 border-0 focus-visible:ring-2 focus-visible:ring-primary font-bold text-sm"
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                />
-                            </div>
-                            <Dialog>
-                                <DialogTrigger asChild>
-                                    <Button className="h-14 px-8 rounded-2xl bg-primary text-white font-black shadow-xl shadow-primary/30 hover:scale-[1.05] transition-all">
-                                        <Plus className="h-6 w-6 mr-2" />
-                                        Upload
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent className="rounded-[2.5rem] border-white/10 bg-card/95 backdrop-blur-2xl">
-                                    <DialogHeader>
-                                        <DialogTitle className="text-2xl font-black uppercase tracking-tight">Upload New Resource</DialogTitle>
-                                        <DialogDescription className="font-medium uppercase text-[10px] tracking-[0.2em] text-primary">Upload notes or PYQs for others</DialogDescription>
-                                    </DialogHeader>
-                                    <div className="grid gap-6 py-6">
-                                        <div className="space-y-2">
-                                            <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Title</Label>
-                                            <Input placeholder="e.g. Operating System Notes" className="h-12 rounded-xl bg-muted/50 border-0" />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Subject</Label>
-                                            <Input placeholder="e.g. Computer Science" className="h-12 rounded-xl bg-muted/50 border-0" />
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="space-y-2">
-                                                <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Type</Label>
-                                                <Select defaultValue="notes">
-                                                    <SelectTrigger className="h-12 rounded-xl bg-muted/50 border-0">
-                                                        <SelectValue />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="notes">Notes</SelectItem>
-                                                        <SelectItem value="pyq">PYQ</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Dept</Label>
-                                                <Input placeholder="e.g. CSE" className="h-12 rounded-xl bg-muted/50 border-0" />
-                                            </div>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">File</Label>
-                                            <Input type="file" className="h-12 rounded-xl bg-muted/50 border-0 pt-2" />
-                                        </div>
+                    <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
+                        <DialogTrigger asChild>
+                            <Button className="rounded-xl px-6 h-12 bg-primary hover:bg-primary/90 text-white font-bold shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5">
+                                <Upload className="w-4 h-4 mr-2" /> Upload New
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-md rounded-3xl border-border shadow-xl">
+                            <DialogHeader>
+                                <DialogTitle className="text-xl font-bold">Upload Resource</DialogTitle>
+                                <DialogDescription>
+                                    Share notes or PYQs with the community.
+                                </DialogDescription>
+                            </DialogHeader>
+                            <div className="space-y-4 py-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="title" className="font-semibold">Title</Label>
+                                    <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. OS Unit 1 Notes" className="rounded-xl" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="subject" className="font-semibold">Subject</Label>
+                                    <Input id="subject" value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="e.g. Operating Systems" className="rounded-xl" />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label className="font-semibold">Department</Label>
+                                        <Select onValueChange={setDept} defaultValue="cse">
+                                            <SelectTrigger className="rounded-xl"><SelectValue placeholder="Select" /></SelectTrigger>
+                                            <SelectContent className="rounded-xl">
+                                                <SelectItem value="cse">CSE</SelectItem>
+                                                <SelectItem value="ece">ECE</SelectItem>
+                                                <SelectItem value="me">Mechanical</SelectItem>
+                                                <SelectItem value="ce">Civil</SelectItem>
+                                            </SelectContent>
+                                        </Select>
                                     </div>
-                                    <DialogFooter>
-                                        <Button type="submit" className="w-full h-12 rounded-xl font-black">Upload Now</Button>
-                                    </DialogFooter>
-                                </DialogContent>
-                            </Dialog>
-                        </div>
-                    </header>
+                                    <div className="space-y-2">
+                                        <Label className="font-semibold">Semester</Label>
+                                        <Select onValueChange={setSem} defaultValue="1">
+                                            <SelectTrigger className="rounded-xl"><SelectValue placeholder="Select" /></SelectTrigger>
+                                            <SelectContent className="rounded-xl">
+                                                {[1, 2, 3, 4, 5, 6, 7, 8].map(s => <SelectItem key={s} value={s.toString()}>Sem {s}</SelectItem>)}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="font-semibold">Type</Label>
+                                    <Select onValueChange={setType} defaultValue="Notes">
+                                        <SelectTrigger className="rounded-xl"><SelectValue placeholder="Select Type" /></SelectTrigger>
+                                        <SelectContent className="rounded-xl">
+                                            <SelectItem value="Notes">Notes</SelectItem>
+                                            <SelectItem value="PYQ">PYQ</SelectItem>
+                                            <SelectItem value="Lab">Lab Manual</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="file" className="font-semibold">File</Label>
+                                    <Input id="file" type="file" onChange={(e) => setFile(e.target.files?.[0] || null)} className="rounded-xl cursor-pointer" />
+                                </div>
+                            </div>
+                            <DialogFooter>
+                                <Button onClick={handleUpload} className="w-full rounded-xl h-12 bg-primary font-bold">Upload Now</Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+                </header>
 
-                    {/* Navigation Console */}
-                    <div className="space-y-8">
-                        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                            <TabsList className="bg-muted/40 p-2 rounded-2xl h-auto gap-2 border border-white/5">
-                                <TabsTrigger value="notes" className="rounded-xl flex-1 py-4 font-black uppercase tracking-widest text-[10px] data-[state=active]:bg-primary data-[state=active]:text-white transition-all">
-                                    <BookOpen className="w-4 h-4 mr-2" /> NOTES
-                                </TabsTrigger>
-                                <TabsTrigger value="pyq" className="rounded-xl flex-1 py-4 font-black uppercase tracking-widest text-[10px] data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground transition-all">
-                                    <Clock className="w-4 h-4 mr-2" /> PYQs
-                                </TabsTrigger>
-                            </TabsList>
-
-                            <TabsContent value="notes" className="mt-10">
-                                {viewMode === 'folders' ? (
-                                    <section className="space-y-8">
-                                        <div className="flex items-center justify-between ml-2">
-                                            <h2 className="text-xl font-black uppercase tracking-tighter">Choose Semester</h2>
-                                            <div className="h-[1px] flex-1 mx-6 bg-gradient-to-r from-muted to-transparent" />
-                                        </div>
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                                            {semesters.map((sem) => (
-                                                <ScaleOnHover key={sem.id}>
-                                                    <div
-                                                        onClick={() => handleFolderClick(sem.title)}
-                                                        className="group bg-card/60 backdrop-blur-sm border border-white/10 rounded-[2.5rem] p-8 cursor-pointer hover:border-primary/50 transition-all duration-500 hover:shadow-2xl relative overflow-hidden h-64 flex flex-col justify-between"
-                                                    >
-                                                        <div className={`p-4 rounded-[1.5rem] w-fit ${sem.bg} ${sem.color} group-hover:scale-110 transition-transform duration-500`}>
-                                                            <sem.icon className="w-8 h-8" />
-                                                        </div>
-                                                        <div className="space-y-1">
-                                                            <h3 className="text-2xl font-black uppercase tracking-tight">{sem.title}</h3>
-                                                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">{sem.count} FILES</p>
-                                                        </div>
-                                                        <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full -mr-12 -mt-12 blur-2xl group-hover:bg-primary/20 transition-all duration-700" />
-                                                    </div>
-                                                </ScaleOnHover>
-                                            ))}
-                                        </div>
-                                    </section>
-                                ) : (
-                                    <section className="space-y-8">
-                                        <div className="flex items-center gap-4 ml-2">
-                                            <Button variant="ghost" className="h-12 rounded-xl px-4 hover:bg-primary/10 hover:text-primary font-black uppercase text-xs" onClick={handleBackClick}>
-                                                <ArrowLeft className="w-4 h-4 mr-2" /> Back to Semesters
-                                            </Button>
-                                            <div className="h-6 w-[1px] bg-white/10" />
-                                            <h3 className="font-black uppercase tracking-tighter text-primary">{currentPath.join(' / ')}</h3>
-                                        </div>
-
-                                        <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                                            {[1, 2, 3, 4, 5, 6].map((i) => (
-                                                <StaggerItem key={i}>
-                                                    <div className="group bg-card/40 backdrop-blur-md border border-white/10 rounded-3xl p-6 flex items-center justify-between hover:border-primary/50 transition-all duration-300">
-                                                        <div className="flex items-center gap-6">
-                                                            <div className="p-4 bg-muted/40 rounded-2xl group-hover:bg-primary/10 transition-colors">
-                                                                <FileText className="w-7 h-7 text-muted-foreground group-hover:text-primary transition-colors" />
-                                                            </div>
-                                                            <div>
-                                                                <h4 className="font-bold text-lg leading-none mb-2 group-hover:text-primary transition-colors uppercase tracking-tight">OS Notes Set {i}</h4>
-                                                                <div className="flex gap-4">
-                                                                    <span className="text-[10px] font-black text-muted-foreground/60 uppercase">PDF • 12MB</span>
-                                                                    <span className="text-[10px] font-black text-primary/60 uppercase tracking-widest">DR. SAXENA</span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <Button size="icon" variant="ghost" className="w-12 h-12 rounded-2xl hover:bg-primary hover:text-white transition-all shadow-lg hover:shadow-primary/20">
-                                                            <Download className="w-5 h-5" />
-                                                        </Button>
-                                                    </div>
-                                                </StaggerItem>
-                                            ))}
-                                        </StaggerContainer>
-                                    </section>
-                                )}
-                            </TabsContent>
-                        </Tabs>
+                {/* Filters */}
+                <div className="bg-card border border-border rounded-[2rem] p-5 shadow-sm grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                    <div className="md:col-span-4 relative">
+                        <Search className="absolute left-4 top-3.5 h-4 w-4 text-muted-foreground" />
+                        <Input
+                            placeholder="Search topics or subjects..."
+                            className="pl-10 h-11 bg-muted/40 border-transparent rounded-xl focus:bg-background focus:border-primary transition-all font-medium"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </div>
+                    <div className="md:col-span-3">
+                        <Select onValueChange={setDepartment} defaultValue="all">
+                            <SelectTrigger className="h-11 rounded-xl bg-muted/40 border-transparent focus:bg-background focus:border-primary transition-all font-medium"><SelectValue placeholder="Department" /></SelectTrigger>
+                            <SelectContent className="rounded-xl">
+                                <SelectItem value="all">All Departments</SelectItem>
+                                <SelectItem value="cse">CSE</SelectItem>
+                                <SelectItem value="ece">ECE</SelectItem>
+                                <SelectItem value="me">Mechanical</SelectItem>
+                                <SelectItem value="ce">Civil</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="md:col-span-3">
+                        <Select onValueChange={setSemester} defaultValue="all">
+                            <SelectTrigger className="h-11 rounded-xl bg-muted/40 border-transparent focus:bg-background focus:border-primary transition-all font-medium"><SelectValue placeholder="Semester" /></SelectTrigger>
+                            <SelectContent className="rounded-xl">
+                                <SelectItem value="all">All Semesters</SelectItem>
+                                {[1, 2, 3, 4, 5, 6, 7, 8].map(s => <SelectItem key={s} value={s.toString()}>Sem {s}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="md:col-span-2 text-right text-xs font-bold text-muted-foreground uppercase tracking-widest px-2">
+                        {loading ? "..." : resources.length} Found
                     </div>
                 </div>
-            </PageWrapper>
+
+                {/* Resource List */}
+                <div className="space-y-4">
+                    {loading ? (
+                        <div className="text-center py-20 text-muted-foreground animate-pulse">Loading resources...</div>
+                    ) : resources.length > 0 ? (
+                        resources.map((res) => (
+                            <div key={res._id} className="group bg-card border border-border/60 rounded-3xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between hover:shadow-lg hover:border-border transition-all duration-300 gap-4">
+                                <div className="flex items-center gap-5">
+                                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 transition-colors ${res.type === 'Notes' ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400' :
+                                            res.type === 'PYQ' ? 'bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400' : 'bg-purple-50 text-purple-600 dark:bg-purple-500/10 dark:text-purple-400'
+                                        }`}>
+                                        <FileText className="w-7 h-7" />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors line-clamp-1">{res.title}</h3>
+                                        <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground mt-1.5 font-medium">
+                                            <Badge variant="secondary" className="rounded-md uppercase text-[10px] tracking-wider px-2 h-5 flex items-center bg-muted/60 text-foreground/80">{res.department} • Sem {res.semester}</Badge>
+                                            <span className="hidden sm:inline">•</span>
+                                            <span>{res.author}</span>
+                                            <span className="hidden sm:inline">•</span>
+                                            <span>{res.size}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href={res.fileUrl} target="_blank" rel="noopener noreferrer">
+                                    <Button variant="ghost" size="icon" className="w-12 h-12 rounded-2xl hover:bg-primary hover:text-white transition-all self-end sm:self-center shrink-0">
+                                        <Download className="w-5 h-5" />
+                                    </Button>
+                                </a>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="text-center py-24 text-muted-foreground">
+                            <div className="w-20 h-20 bg-muted/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <Search className="w-8 h-8 opacity-40" />
+                            </div>
+                            <h3 className="font-bold text-lg text-foreground mb-1">No resources found</h3>
+                            <p>Try adjusting your filters or search query.</p>
+                        </div>
+                    )}
+                </div>
+            </div>
         </main>
     );
 }
